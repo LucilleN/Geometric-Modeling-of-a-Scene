@@ -795,6 +795,9 @@ void display_func() {
     
     glFlush();            //Finish rendering
     glutSwapBuffers();
+    
+    delete scene_vertices;
+    delete color_vertices;
 }
 
 void idle_func() {
@@ -821,11 +824,6 @@ int main (int argc, char **argv) {
     glutIdleFunc(idle_func);
     // Render our world
     glutMainLoop();
-    
-    // TODO ASK HERE
-    // Remember to call "delete" on your dynmically allocated arrays
-    // such that you don't suffer from memory leaks. e.g.
-    // delete arr;
     
     return 0;
 }
