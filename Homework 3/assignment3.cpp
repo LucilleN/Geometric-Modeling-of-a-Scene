@@ -178,7 +178,7 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
 }
 
 // Concats each vector in a vector of components onto the end of the given result vector.
-vector<GLfloat> concat_components(vector<GLfloat> &result, vector<vector<GLfloat>> &components) {
+vector<GLfloat> concat_components(vector<GLfloat> &result, vector< vector<GLfloat> > &components) {
     for (vector<GLfloat> &component : components) {
         result.insert(result.end(), component.begin(), component.end());
     }
@@ -198,7 +198,7 @@ vector<GLfloat> build_cube() {
     vector<GLfloat> top = mat_mult(translation_matrix(0, 0.5, 0), mat_mult(rotation_matrix_x(-90), to_homogeneous_coord(init_plane())));
     vector<GLfloat> bottom = mat_mult(translation_matrix(0, -0.5, 0), mat_mult(rotation_matrix_x(90), to_homogeneous_coord(init_plane())));
     
-    vector<vector<GLfloat>> planes = {front, back, right, left, top, bottom};
+    vector< vector<GLfloat> > planes = {front, back, right, left, top, bottom};
     
     concat_components(result, planes);
 
@@ -315,7 +315,7 @@ vector<GLfloat> build_sofa() {
     vector<GLfloat> arm_left = translate(build_sofa_arm(), -arm_offset_x, 0.3, arm_offset_z);
     vector<GLfloat> arm_right = translate(build_sofa_arm(), arm_offset_x, 0.3, arm_offset_z);
 
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         leg_front_left,
         leg_front_right,
         leg_back_left,
@@ -377,7 +377,7 @@ vector<GLfloat> build_table() {
     vector<GLfloat> book_3 = translate(rotate(build_table_book(), "y", 8), book_offset_x - 0.01, 3 * book_offset_y, book_offset_z);
     
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         leg_front_left,
         leg_front_right,
         leg_back_left,
@@ -406,7 +406,7 @@ vector<GLfloat> build_trapezoidal_volume() {
     vector<GLfloat> right = translate(rotate(init_plane(), "y", 90), 0.5, 0, 0);
     vector<GLfloat> left = translate(rotate(init_plane(), "y", -90), -0.5, 0, 0);
 
-    vector<vector<GLfloat>> cube_sides = {front, back, right, left};
+    vector< vector<GLfloat> > cube_sides = {front, back, right, left};
     
     concat_components(result, cube_sides);
     
@@ -448,7 +448,7 @@ vector<GLfloat> build_lamp() {
     vector<GLfloat> pole = translate(build_lamp_pole(), 0, 1, 0);
     vector<GLfloat> base = build_lamp_base();
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         shade,
         shade_support_1,
         shade_support_2,
@@ -533,7 +533,7 @@ vector<GLfloat> build_chair() {
     vector<GLfloat> back_support_middle = translate(build_back_support(), 0, back_offset_y, back_offset_z);
     vector<GLfloat> back_support_right = translate(build_back_support(), support_offset_x, back_offset_y, back_offset_z);
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         seat,
         leg_front_left,
         leg_front_right,
@@ -618,7 +618,7 @@ vector<GLfloat> build_side_table() {
     
     vector<GLfloat> book = translate(rotate(scale(build_table_book(), 1.5, 1.5, 1.5), "y", 10), -0.7, 0.44, 0);
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         frame,
         leg_front_left,
         leg_front_right,
@@ -678,7 +678,7 @@ vector<GLfloat> build_foot_stool() {
     vector<GLfloat> leg_back_left = translate(build_side_table_leg(), -leg_offset_x, leg_offset_y, -leg_offset_z);
     vector<GLfloat> leg_back_right = translate(build_side_table_leg(), leg_offset_x, leg_offset_y, -leg_offset_z);
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         frame,
         cushion,
         leg_front_left,
@@ -706,7 +706,7 @@ vector<GLfloat> build_room() {
     vector<GLfloat> foot_stool_1 = translate(rotate(build_foot_stool(), "y", -10), -2.45, 0.45, 1);
     vector<GLfloat> foot_stool_2 = translate(rotate(build_foot_stool(), "y", 15), -2.5, 0.45, -0.5);
     
-    vector<vector<GLfloat>> components = {
+    vector< vector<GLfloat> > components = {
         sofa,
         table,
         lamp,
@@ -749,8 +749,8 @@ void init_camera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     
-    // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 1 and 12
-    gluPerspective(50.0, 1.0, 1.0, 12.0);
+    // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 1 and 15
+    gluPerspective(50.0, 1.0, 1.0, 15.0);
     // Position camera at (2, 6, 5), attention at (0, 0, 0), up at (0, 1, 0)
     gluLookAt(2.0, 6.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     
