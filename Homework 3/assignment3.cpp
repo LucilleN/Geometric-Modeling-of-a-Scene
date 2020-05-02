@@ -177,6 +177,14 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     return result;
 }
 
+// Concats each vector in a vector of components onto the end of the given result vector.
+vector<GLfloat> concat_components(vector<GLfloat> &result, vector<vector<GLfloat>> &components) {
+    for (vector<GLfloat> &component : components) {
+        result.insert(result.end(), component.begin(), component.end());
+    }
+    return result;
+}
+
 // Builds a unit cube centered at the origin
 vector<GLfloat> build_cube() {
     vector<GLfloat> result = {};
@@ -190,12 +198,10 @@ vector<GLfloat> build_cube() {
     vector<GLfloat> top = mat_mult(translation_matrix(0, 0.5, 0), mat_mult(rotation_matrix_x(-90), to_homogeneous_coord(init_plane())));
     vector<GLfloat> bottom = mat_mult(translation_matrix(0, -0.5, 0), mat_mult(rotation_matrix_x(90), to_homogeneous_coord(init_plane())));
     
-    vector<GLfloat> planes[6] = {front, back, right, left, top, bottom};
+    vector<vector<GLfloat>> planes = {front, back, right, left, top, bottom};
     
-    for (vector<GLfloat> plane : planes) {
-        result.insert(result.end(), plane.begin(), plane.end());
-    }
-    
+    concat_components(result, planes);
+
     return to_cartesian_coord(result);
 }
 
@@ -236,14 +242,6 @@ vector<GLfloat> translate(vector<GLfloat> points, GLfloat dx, GLfloat dy, GLfloa
     vector<GLfloat> homogenous_original = to_homogeneous_coord(points);
     vector<GLfloat> homogenous_transformed = mat_mult(translation_matrix(dx, dy, dz), homogenous_original);
     vector<GLfloat> result = to_cartesian_coord(homogenous_transformed);
-    return result;
-}
-
-// Concats each vector in a vector of components onto the end of the given result vector.
-vector<GLfloat> concat_components(vector<GLfloat> &result, vector<vector<GLfloat>> &components) {
-    for (vector<GLfloat> &component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
     return result;
 }
 
@@ -317,7 +315,7 @@ vector<GLfloat> build_sofa() {
     vector<GLfloat> arm_left = translate(build_sofa_arm(), -arm_offset_x, 0.3, arm_offset_z);
     vector<GLfloat> arm_right = translate(build_sofa_arm(), arm_offset_x, 0.3, arm_offset_z);
 
-    vector<GLfloat> components[14] = {
+    vector<vector<GLfloat>> components = {
         leg_front_left,
         leg_front_right,
         leg_back_left,
@@ -333,11 +331,7 @@ vector<GLfloat> build_sofa() {
         arm_left,
         arm_right};
     
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+    return concat_components(result, components);
 }
 
 //////////////
@@ -383,7 +377,7 @@ vector<GLfloat> build_table() {
     vector<GLfloat> book_3 = translate(rotate(build_table_book(), "y", 8), book_offset_x - 0.01, 3 * book_offset_y, book_offset_z);
     
     
-    vector<GLfloat> components[9] = {
+    vector<vector<GLfloat>> components = {
         leg_front_left,
         leg_front_right,
         leg_back_left,
@@ -395,11 +389,7 @@ vector<GLfloat> build_table() {
         book_3
     };
     
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+    return concat_components(result, components);
 }
 
 //////////////
@@ -416,16 +406,14 @@ vector<GLfloat> build_trapezoidal_volume() {
     vector<GLfloat> right = translate(rotate(init_plane(), "y", 90), 0.5, 0, 0);
     vector<GLfloat> left = translate(rotate(init_plane(), "y", -90), -0.5, 0, 0);
 
-    vector<GLfloat> cube_sides[4] = {front, back, right, left};
+    vector<vector<GLfloat>> cube_sides = {front, back, right, left};
     
-    for (vector<GLfloat> face : cube_sides) {
-        result.insert(result.end(), face.begin(), face.end());
-    }
+    concat_components(result, cube_sides);
     
     vector<GLfloat> top = translate(rotate(init_plane(), "x", -90), 0, 0.5, 0);
     
     // Find all the points that are along the top of the cube and move them inwards;
-    // these points will be at (0.5, 0.5, 0.5), (0.5, 0.5, -0.5), etc.
+    // these points will be found at (x = ?, y = 0.5, z = ?)
     for (int i = 0; i < result.size(); i += 3) {
         if (result[i+1] == 0.5) {
             result[i] = result[i] < 0 ? result[i] + 0.2 : result[i] - 0.2;
@@ -460,19 +448,15 @@ vector<GLfloat> build_lamp() {
     vector<GLfloat> pole = translate(build_lamp_pole(), 0, 1, 0);
     vector<GLfloat> base = build_lamp_base();
     
-    vector<GLfloat> components[5] = {
+    vector<vector<GLfloat>> components = {
         shade,
         shade_support_1,
         shade_support_2,
         pole,
         base,
     };
-    
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+
+    return concat_components(result, components);
 }
 
 //////////////
@@ -549,7 +533,7 @@ vector<GLfloat> build_chair() {
     vector<GLfloat> back_support_middle = translate(build_back_support(), 0, back_offset_y, back_offset_z);
     vector<GLfloat> back_support_right = translate(build_back_support(), support_offset_x, back_offset_y, back_offset_z);
     
-    vector<GLfloat> components[17] = {
+    vector<vector<GLfloat>> components = {
         seat,
         leg_front_left,
         leg_front_right,
@@ -569,11 +553,7 @@ vector<GLfloat> build_chair() {
         back_support_right
     };
     
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+    return concat_components(result, components);
 }
 
 //////////////
@@ -638,7 +618,7 @@ vector<GLfloat> build_side_table() {
     
     vector<GLfloat> book = translate(rotate(scale(build_table_book(), 1.5, 1.5, 1.5), "y", 10), -0.7, 0.44, 0);
     
-    vector<GLfloat> components[22] = {
+    vector<vector<GLfloat>> components = {
         frame,
         leg_front_left,
         leg_front_right,
@@ -663,11 +643,7 @@ vector<GLfloat> build_side_table() {
         book
     };
     
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+    return concat_components(result, components);
 }
 
 //////////////
@@ -711,12 +687,6 @@ vector<GLfloat> build_foot_stool() {
         leg_back_right
     };
     
-//    for (vector<GLfloat> component : components) {
-//        result.insert(result.end(), component.begin(), component.end());
-//    }
-    
-//    return result;
-    
     return concat_components(result, components);
 }
 
@@ -731,12 +701,12 @@ vector<GLfloat> build_room() {
     vector<GLfloat> sofa = translate(build_sofa(), 0, 0.3, -2);
     vector<GLfloat> table = translate(build_table(), 0, 0.7, 0);
     vector<GLfloat> lamp = translate(rotate(build_lamp(), "y", 30), 2.3, 0, -2);
-    vector<GLfloat> chair = translate(rotate(build_chair(), "y", 230), 2.2, 1, 1.5);
+    vector<GLfloat> chair = translate(rotate(build_chair(), "y", 230), 2.2, 0.8, 1.5);
     vector<GLfloat> side_table = translate(rotate(build_side_table(), "y", 180), 0, 0.8, 3);
     vector<GLfloat> foot_stool_1 = translate(rotate(build_foot_stool(), "y", -10), -2.45, 0.45, 1);
     vector<GLfloat> foot_stool_2 = translate(rotate(build_foot_stool(), "y", 15), -2.5, 0.45, -0.5);
     
-    vector<GLfloat> components[7] = {
+    vector<vector<GLfloat>> components = {
         sofa,
         table,
         lamp,
@@ -746,11 +716,7 @@ vector<GLfloat> build_room() {
         foot_stool_2
     };
     
-    for (vector<GLfloat> component : components) {
-        result.insert(result.end(), component.begin(), component.end());
-    }
-    
-    return result;
+    return concat_components(result, components);
 }
 
 /**************************************************
@@ -863,4 +829,3 @@ int main (int argc, char **argv) {
     
     return 0;
 }
-
